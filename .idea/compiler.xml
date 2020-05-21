@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="ev-zw" />
         <module name="ev-hhd" />
+        <module name="ev-ykc" />
         <module name="ev-kl" />
       </profile>
     </annotationProcessing>
@@ -17,6 +18,7 @@
       <module name="cdz-ev" options="-parameters" />
       <module name="ev-hhd" options="-parameters" />
       <module name="ev-kl" options="-parameters" />
+      <module name="ev-ykc" options="-parameters" />
       <module name="ev-zw" options="-parameters" />
     </option>
   </component>
