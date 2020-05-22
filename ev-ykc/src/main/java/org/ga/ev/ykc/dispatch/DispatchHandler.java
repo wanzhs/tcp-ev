@@ -47,6 +47,11 @@ public class DispatchHandler extends SimpleChannelInboundHandler<YkcFrame> {
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        log.info(StrUtil.format("连接成功，管道激活"));
+    }
+
+    @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;

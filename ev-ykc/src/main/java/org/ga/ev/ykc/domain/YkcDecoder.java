@@ -36,6 +36,9 @@ public class YkcDecoder extends ByteToMessageDecoder {
     }
 
     private Object decode(ChannelHandlerContext context, ByteBuf in) {
+        if (in.getByte(in.readerIndex()) != START_MARK) {
+            in.skipBytes(1);
+        }
         int startIndex = findStartMark(in);
         if (startIndex > -1) {
             int length = in.getByte(in.readerIndex() + 1) & 0xfff;
