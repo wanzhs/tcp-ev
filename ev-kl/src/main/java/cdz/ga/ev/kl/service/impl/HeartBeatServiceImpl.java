@@ -1,7 +1,7 @@
 package cdz.ga.ev.kl.service.impl;
 
-import cdz.ga.ev.kl.domain.bean.EvFrame;
-import cdz.ga.ev.kl.domain.enums.Cmd;
+import cdz.ga.ev.kl.domain.bean.KlFrame;
+import cdz.ga.ev.kl.domain.enums.KlCmd;
 import cdz.ga.ev.kl.domain.enums.ExpType;
 import cdz.ga.ev.kl.domain.enums.FrameType;
 import cdz.ga.ev.kl.domain.utils.ChannelThreadLocal;
@@ -30,7 +30,7 @@ public class HeartBeatServiceImpl implements ICmdService, InitializingBean {
     private ChannelThreadLocal threadLocal;
 
     @Override
-    public void run(EvFrame frame) {
+    public void run(KlFrame frame) {
         Channel channel = threadLocal.get();
         Integer ctrlId = frame.getCtrlId();
         byte[] data = frame.getData();
@@ -42,15 +42,15 @@ public class HeartBeatServiceImpl implements ICmdService, InitializingBean {
         String second = BCD.bcdToStr(ArrayUtil.sub(data, 5, 6));
         log.info(StrUtil.format("收到集控器{}心跳命令,时间  年={}月={}日={}时={}分={}秒={}", ctrlId, year, month, day,
                 hour, minute, second));
-        EvFrame evFrame = new EvFrame();
-        evFrame.setCmd(Cmd.X24)
+        KlFrame klFrame = new KlFrame();
+        klFrame.setKlCmd(KlCmd.X24)
                 .setFrameType(FrameType.REPLY_FRAME)
                 .setExpType(ExpType.CONFIRM_FRAME);
-        channel.writeAndFlush(evFrame);
+        channel.writeAndFlush(klFrame);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        CmdFactory.addService(Cmd.XA4, this);
+        CmdFactory.addService(KlCmd.XA4, this);
     }
 }

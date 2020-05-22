@@ -1,6 +1,6 @@
 package cdz.ga.ev.kl.domain.bean;
 
-import cdz.ga.ev.kl.domain.enums.Cmd;
+import cdz.ga.ev.kl.domain.enums.KlCmd;
 import cdz.ga.ev.kl.domain.enums.ExpType;
 import cdz.ga.ev.kl.domain.enums.FrameType;
 import lombok.Data;
@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class EvFrame {
+public class KlFrame {
     /**
      * 终端逻辑地址
      */
@@ -42,7 +42,7 @@ public class EvFrame {
     /**
      * 控制码
      */
-    private Cmd cmd;
+    private KlCmd klCmd;
     /**
      * 数据域
      */

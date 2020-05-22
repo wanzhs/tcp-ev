@@ -1,7 +1,7 @@
 package cdz.ga.ev.kl.service.impl;
 
-import cdz.ga.ev.kl.domain.bean.EvFrame;
-import cdz.ga.ev.kl.domain.enums.Cmd;
+import cdz.ga.ev.kl.domain.bean.KlFrame;
+import cdz.ga.ev.kl.domain.enums.KlCmd;
 import cdz.ga.ev.kl.domain.enums.ExpType;
 import cdz.ga.ev.kl.domain.enums.FrameType;
 import cdz.ga.ev.kl.domain.utils.ChannelThreadLocal;
@@ -29,21 +29,21 @@ public class LogoutServiceImpl implements ICmdService, InitializingBean {
     private ChannelThreadLocal channelThreadLocal;
 
     @Override
-    public void run(EvFrame frame) {
+    public void run(KlFrame frame) {
         Channel channel = channelThreadLocal.get();
         Integer ctrlId = frame.getCtrlId();
         log.info(StrUtil.format("集控器{}请求登录退出", ctrlId));
-        EvFrame evFrame = new EvFrame();
-        BeanUtil.copyProperties(frame, evFrame);
-        evFrame.setExpType(ExpType.CONFIRM_FRAME)
-                .setCmd(Cmd.X22)
+        KlFrame klFrame = new KlFrame();
+        BeanUtil.copyProperties(frame, klFrame);
+        klFrame.setExpType(ExpType.CONFIRM_FRAME)
+                .setKlCmd(KlCmd.X22)
                 .setFrameType(FrameType.REPLY_FRAME);
-        channel.writeAndFlush(evFrame);
+        channel.writeAndFlush(klFrame);
         channel.close();
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        CmdFactory.addService(Cmd.XA2, this);
+        CmdFactory.addService(KlCmd.XA2, this);
     }
 }

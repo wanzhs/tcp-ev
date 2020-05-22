@@ -1,8 +1,8 @@
 package cdz.ga.ev.kl;
 
-import cdz.ga.ev.kl.domain.bean.EvEncoder;
-import cdz.ga.ev.kl.domain.bean.EvFrame;
-import cdz.ga.ev.kl.domain.enums.Cmd;
+import cdz.ga.ev.kl.domain.bean.KlEncoder;
+import cdz.ga.ev.kl.domain.bean.KlFrame;
+import cdz.ga.ev.kl.domain.enums.KlCmd;
 import cdz.ga.ev.kl.domain.enums.ExpType;
 import cdz.ga.ev.kl.domain.enums.FrameType;
 import io.netty.bootstrap.Bootstrap;
@@ -34,23 +34,23 @@ public class NettyClient {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new EvEncoder());
+                pipeline.addLast(new KlEncoder());
             }
         });
         try {
             Channel channel = bootstrap.connect(ip, port).sync().channel();
             int i = 0;
             while (++i < 2) {
-                EvFrame evFrame = new EvFrame();
-                evFrame.setCanIndex(300)
+                KlFrame klFrame = new KlFrame();
+                klFrame.setCanIndex(300)
                         .setCtrlId(263)
-                        .setSeq(EvEncoder.getSeq())
+                        .setSeq(KlEncoder.getSeq())
                         .setFrameType(FrameType.REPLY_FRAME)
                         .setExpType(ExpType.DENY_FRAME)
-                        .setCmd(Cmd.X0A)
+                        .setKlCmd(KlCmd.X0A)
                         .setMst(29)
                         .setData("HelloWorld".getBytes());
-                channel.writeAndFlush(evFrame);
+                channel.writeAndFlush(klFrame);
                 System.out.println("已发送" + i);
             }
         } catch (Exception ex) {

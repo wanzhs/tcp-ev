@@ -1,6 +1,6 @@
 package cdz.ga.ev.kl.service;
 
-import cdz.ga.ev.kl.domain.bean.EvFrame;
+import cdz.ga.ev.kl.domain.bean.KlFrame;
 
 /**
  * 命令抽象处理接口
@@ -14,5 +14,5 @@ public interface ICmdService {
      *
      * @param frame 数据
      */
-    void run(EvFrame frame);
+    void run(KlFrame frame);
 }

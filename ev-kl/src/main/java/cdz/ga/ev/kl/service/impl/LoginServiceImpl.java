@@ -1,9 +1,9 @@
 package cdz.ga.ev.kl.service.impl;
 
-import cdz.ga.ev.kl.domain.bean.EvFrame;
+import cdz.ga.ev.kl.domain.bean.KlFrame;
 import cdz.ga.ev.kl.domain.consts.AuthedChannel;
-import cdz.ga.ev.kl.domain.consts.EvAttributeKey;
-import cdz.ga.ev.kl.domain.enums.Cmd;
+import cdz.ga.ev.kl.domain.consts.KlAttributeKey;
+import cdz.ga.ev.kl.domain.enums.KlCmd;
 import cdz.ga.ev.kl.domain.enums.ExpType;
 import cdz.ga.ev.kl.domain.enums.FrameType;
 import cdz.ga.ev.kl.domain.utils.ChannelThreadLocal;
@@ -36,7 +36,7 @@ public class LoginServiceImpl implements ICmdService, InitializingBean {
     private AuthedChannel authedChannel;
 
     @Override
-    public void run(EvFrame frame) {
+    public void run(KlFrame frame) {
         Channel channel = threadLocal.get();
         byte[] data = frame.getData();
         log.info(String.format("桩体登录数据:{}", HexUtil.encodeHex(data)));
@@ -56,10 +56,10 @@ public class LoginServiceImpl implements ICmdService, InitializingBean {
      * @param channel 通道
      * @param passed  是否通过了验证
      */
-    private void replyLogin(Channel channel, boolean passed, EvFrame frame) {
+    private void replyLogin(Channel channel, boolean passed, KlFrame frame) {
         Integer ctrlId = frame.getCtrlId();
-        EvFrame evFrame = new EvFrame()
-                .setCmd(Cmd.X21)
+        KlFrame klFrame = new KlFrame()
+                .setKlCmd(KlCmd.X21)
                 .setFrameType(FrameType.REPLY_FRAME)
                 .setCanIndex(frame.getCanIndex())
                 .setCtrlId(ctrlId)
@@ -70,19 +70,19 @@ public class LoginServiceImpl implements ICmdService, InitializingBean {
              * 通过认证，将集控器id加入该管道
              */
             authedChannel.addChannel(frame.getCtrlId(), channel);
-            AttributeKey<Integer> attributeKey = EvAttributeKey.CTRL_ID;
+            AttributeKey<Integer> attributeKey = KlAttributeKey.CTRL_ID;
             Attribute attribute = channel.attr(attributeKey);
             attribute.set(ctrlId);
-            evFrame.setExpType(ExpType.CONFIRM_FRAME);
+            klFrame.setExpType(ExpType.CONFIRM_FRAME);
         } else {
-            evFrame.setExpType(ExpType.DENY_FRAME);
+            klFrame.setExpType(ExpType.DENY_FRAME);
         }
-        channel.writeAndFlush(evFrame);
+        channel.writeAndFlush(klFrame);
     }
 
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        CmdFactory.addService(Cmd.XA1, this);
+        CmdFactory.addService(KlCmd.XA1, this);
     }
 }

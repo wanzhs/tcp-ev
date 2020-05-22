@@ -6,7 +6,7 @@ package cdz.ga.ev.kl.domain.enums;
  * @author wanzhongsu
  * @date 2020/5/18 16:38
  */
-public enum Cmd {
+public enum KlCmd {
     /**
      * 读当前数据
      */
@@ -98,7 +98,7 @@ public enum Cmd {
      */
     private Integer cmdId;
 
-    Cmd(Integer cmdId) {
+    KlCmd(Integer cmdId) {
         this.cmdId = cmdId;
     }
 
@@ -117,7 +117,7 @@ public enum Cmd {
      * @param cmdId 指令id
      * @return 控制命令
      */
-    public static Cmd getInstance(int cmdId) {
+    public static KlCmd getInstance(int cmdId) {
         switch (cmdId) {
             case 0x01:
                 return X01;

@@ -1,6 +1,6 @@
 package cdz.ga.ev.kl.domain.bean;
 
-import cdz.ga.ev.kl.domain.enums.Cmd;
+import cdz.ga.ev.kl.domain.enums.KlCmd;
 import cdz.ga.ev.kl.domain.enums.ExpType;
 import cdz.ga.ev.kl.domain.enums.FrameType;
 import cdz.ga.ev.kl.domain.utils.TcpUtils;
@@ -22,7 +22,7 @@ import java.util.List;
  * @date 2020/5/18 14:47
  */
 @Slf4j
-public class EvDecoder extends ByteToMessageDecoder {
+public class KlDecoder extends ByteToMessageDecoder {
     /**
      * 除了数据的其他数据长度
      */
@@ -64,7 +64,7 @@ public class EvDecoder extends ByteToMessageDecoder {
                     log.info("收到了完整的一帧数据");
                     int length = in.getShort(in.readerIndex() + LENGTH_FIELD_OFFSET);
                     log.info("数据长度:" + length);
-                    ByteBuf frameData = in.readRetainedSlice(length + HEADER_LENGTH);
+                    ByteBuf frameData = in.readSlice(length + HEADER_LENGTH);
                     byte[] frameDataBy = new byte[length + HEADER_LENGTH];
                     frameData.getBytes(frameData.readerIndex(), frameDataBy);
                     log.info("原始数据：" + HexUtil.encodeHexStr(frameDataBy));
@@ -124,21 +124,21 @@ public class EvDecoder extends ByteToMessageDecoder {
                         //校验通过
                         log.info("校验通过");
                         //封装
-                        Cmd cmd = Cmd.getInstance(cmdId);
-                        EvFrame evFrame = new EvFrame()
-                                .setCmd(cmd)
+                        KlCmd klCmd = KlCmd.getInstance(cmdId);
+                        KlFrame klFrame = new KlFrame()
+                                .setKlCmd(klCmd)
                                 .setCanIndex(canIndex)
                                 .setSeq(seq)
                                 .setCtrlId(ctrlId)
                                 .setFrameType(FrameType.getInstance(frameType))
                                 .setExpType(ExpType.getInstance(expType))
                                 .setMst(ms1).setData(msg);
-                        log.info(StrUtil.format("解析成功={}", JSONUtil.toJsonStr(evFrame)));
-                        if (ObjectUtil.isEmpty(cmd)) {
+                        log.info(StrUtil.format("解析成功={}", JSONUtil.toJsonStr(klFrame)));
+                        if (ObjectUtil.isEmpty(klCmd)) {
                             log.info(StrUtil.format("未知指令{},不进行适配处理,丢弃", cmdId));
                             return null;
                         }
-                        return evFrame;
+                        return klFrame;
                     } else {
                         //校验不通过
                         log.info("校验不通过");

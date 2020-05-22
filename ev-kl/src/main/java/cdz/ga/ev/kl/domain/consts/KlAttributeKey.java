@@ -8,7 +8,7 @@ import io.netty.util.AttributeKey;
  * @author wanzhongsu
  * @date 2020/5/20 16:54
  */
-public class EvAttributeKey {
+public class KlAttributeKey {
     /**
      * 集控器id
      */

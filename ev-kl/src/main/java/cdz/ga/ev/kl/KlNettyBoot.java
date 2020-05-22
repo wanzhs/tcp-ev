@@ -2,8 +2,8 @@ package cdz.ga.ev.kl;
 
 
 import cdz.ga.ev.kl.dispatch.DispatchHandler;
-import cdz.ga.ev.kl.domain.bean.EvDecoder;
-import cdz.ga.ev.kl.domain.bean.EvEncoder;
+import cdz.ga.ev.kl.domain.bean.KlDecoder;
+import cdz.ga.ev.kl.domain.bean.KlEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-public class EvNettyBoot implements CommandLineRunner {
+public class KlNettyBoot implements CommandLineRunner {
     /**
      * netty启动端口
      */
@@ -52,15 +52,15 @@ public class EvNettyBoot implements CommandLineRunner {
             server.group(boosGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .localAddress(new InetSocketAddress(nettyPort));
-            final EvEncoder evEncoder = new EvEncoder();
+            final KlEncoder klEncoder = new KlEncoder();
             server.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ChannelPipeline pipeline = ch.pipeline();
                     pipeline.addLast(new IdleStateHandler(90, 0, 0, TimeUnit.SECONDS));
-                    pipeline.addLast(new EvDecoder());
+                    pipeline.addLast(new KlDecoder());
                     pipeline.addLast(dispatchHandler);
-                    pipeline.addLast(new EvEncoder());
+                    pipeline.addLast(new KlEncoder());
                 }
             }).option(ChannelOption.SO_BACKLOG, 1024)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);

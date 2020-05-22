@@ -1,9 +1,9 @@
 package cdz.ga.ev.kl.dispatch;
 
-import cdz.ga.ev.kl.domain.bean.EvFrame;
+import cdz.ga.ev.kl.domain.bean.KlFrame;
 import cdz.ga.ev.kl.domain.consts.AuthedChannel;
-import cdz.ga.ev.kl.domain.consts.EvAttributeKey;
-import cdz.ga.ev.kl.domain.enums.Cmd;
+import cdz.ga.ev.kl.domain.consts.KlAttributeKey;
+import cdz.ga.ev.kl.domain.enums.KlCmd;
 import cdz.ga.ev.kl.domain.utils.ChannelThreadLocal;
 import cdz.ga.ev.kl.service.CmdFactory;
 import cdz.ga.ev.kl.service.ICmdService;
@@ -31,7 +31,7 @@ import javax.annotation.Resource;
 @Slf4j
 @Component
 @ChannelHandler.Sharable
-public class DispatchHandler extends SimpleChannelInboundHandler<EvFrame> {
+public class DispatchHandler extends SimpleChannelInboundHandler<KlFrame> {
     @Resource
     private ChannelThreadLocal threadLocal;
 
@@ -39,12 +39,12 @@ public class DispatchHandler extends SimpleChannelInboundHandler<EvFrame> {
     private AuthedChannel authedChannel;
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, EvFrame msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, KlFrame msg) throws Exception {
         log.info(StrUtil.format("收到信息：{}", msg));
-        Cmd cmd = msg.getCmd();
-        ICmdService service = CmdFactory.getService(cmd);
+        KlCmd klCmd = msg.getKlCmd();
+        ICmdService service = CmdFactory.getService(klCmd);
         if (ObjectUtil.isEmpty(service)) {
-            log.info(StrUtil.format("指令{}不存在相应的解析处理逻辑", cmd));
+            log.info(StrUtil.format("指令{}不存在相应的解析处理逻辑", klCmd));
         } else {
             try {
                 threadLocal.put(ctx.channel());
@@ -62,8 +62,8 @@ public class DispatchHandler extends SimpleChannelInboundHandler<EvFrame> {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
                 Channel channel = ctx.channel();
-                if (channel.hasAttr(EvAttributeKey.CTRL_ID)) {
-                    Integer ctrlId = channel.attr(EvAttributeKey.CTRL_ID).get();
+                if (channel.hasAttr(KlAttributeKey.CTRL_ID)) {
+                    Integer ctrlId = channel.attr(KlAttributeKey.CTRL_ID).get();
                     log.info(StrUtil.format("已认证的连接,集控器{}的管道连接超时,服务端主动关闭该管道", ctrlId));
                     channel.close();
                 } else {
@@ -78,8 +78,8 @@ public class DispatchHandler extends SimpleChannelInboundHandler<EvFrame> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        if (channel.hasAttr(EvAttributeKey.CTRL_ID)) {
-            Integer ctrlId = channel.attr(EvAttributeKey.CTRL_ID).get();
+        if (channel.hasAttr(KlAttributeKey.CTRL_ID)) {
+            Integer ctrlId = channel.attr(KlAttributeKey.CTRL_ID).get();
             log.info(StrUtil.format("集控器{}的管道离线", ctrlId));
             authedChannel.removeChannel(ctrlId);
         }
@@ -88,8 +88,8 @@ public class DispatchHandler extends SimpleChannelInboundHandler<EvFrame> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         Channel channel = ctx.channel();
-        if (channel.hasAttr(EvAttributeKey.CTRL_ID)) {
-            Integer ctrlId = channel.attr(EvAttributeKey.CTRL_ID).get();
+        if (channel.hasAttr(KlAttributeKey.CTRL_ID)) {
+            Integer ctrlId = channel.attr(KlAttributeKey.CTRL_ID).get();
             log.info(StrUtil.format("已认证的连接,集控器{}的管道netty错误{}", ctrlId, ExceptionUtil.getMessage(cause)));
         } else {
             log.info(StrUtil.format("未认证的连接,集控器管道netty错误{}", ExceptionUtil.getMessage(cause)));

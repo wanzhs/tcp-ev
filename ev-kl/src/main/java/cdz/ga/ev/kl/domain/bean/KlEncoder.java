@@ -13,7 +13,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @author wanzhongsu
  * @date 2020/5/18 14:47
  */
-public class EvEncoder extends MessageToByteEncoder<EvFrame> {
+public class KlEncoder extends MessageToByteEncoder<KlFrame> {
     /**
      * 帧起始值
      */
@@ -35,7 +35,7 @@ public class EvEncoder extends MessageToByteEncoder<EvFrame> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, EvFrame msg, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, KlFrame msg, ByteBuf out) throws Exception {
         ByteBuf byteBuf = Unpooled.buffer();
         //封装帧起始符
         byteBuf.writeByte(START_MARK);
@@ -57,7 +57,7 @@ public class EvEncoder extends MessageToByteEncoder<EvFrame> {
         //封装帧起始符号
         byteBuf.writeByte(START_MARK);
         //封装控制码
-        byte cmd = msg.getCmd().getCmdId();
+        byte cmd = msg.getKlCmd().getCmdId();
         byte frameType = (byte) (msg.getFrameType().getValue() << 7);
         byte expType = (byte) (msg.getExpType().getValue() << 6);
         byteBuf.writeByte(cmd | frameType | expType);
