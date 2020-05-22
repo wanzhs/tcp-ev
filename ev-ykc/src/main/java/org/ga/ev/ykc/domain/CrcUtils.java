@@ -81,7 +81,7 @@ public class CrcUtils {
      * @return
      */
     public static byte[] getCheckCode(byte[] msg) {
-        return calcCrc16(msg, 0, msg.length, 0x180D);
+        return calcCrc16(msg, 0, msg.length, 0xffffff);
     }
 
     /**
