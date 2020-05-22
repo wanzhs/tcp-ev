@@ -61,7 +61,7 @@ public class YkcDecoder extends ByteToMessageDecoder {
                 byte[] checkBy = new byte[2];
                 frameData.readBytes(checkBy);
                 //校验数据
-                byte[] checkCode = CrcUtils.getCheckCode(ArrayUtil.sub(msg, 2, msg.length - 2));
+                byte[] checkCode = CrcUtils.getCheckCode(ArrayUtil.sub(frameDataBy, 2, frameDataBy.length - 2));
                 if (checkBy[0] == checkCode[0] && checkBy[1] == checkCode[1]) {
                     YkcFrame ykcFrame = new YkcFrame()
                             .setSeq(seq).setCmd(YkcCmd.getInstance(cmd)).setData(msg)

@@ -1,5 +1,8 @@
 package org.ga.ev.ykc.domain;
 
+import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.StrUtil;
+
 /**
  * Crc校验工具
  *
@@ -78,17 +81,32 @@ public class CrcUtils {
      * @return
      */
     public static byte[] getCheckCode(byte[] msg) {
-        byte byCrcHi = (byte) 0xfe;
-        byte byCrcLo = (byte) 0xff;
-        int byIdx;
-        for (int i = 0; i < msg.length; i++) {
-            byIdx = ((byCrcHi ^ msg[i]) + 256) % 256;
-            byCrcHi = (byte) (byCrcLo ^ gaCrcHi[byIdx]);
-            byCrcLo = gaCrcLo[byIdx];
+        return calcCrc16(msg, 0, msg.length, 0x180D);
+    }
+
+    /**
+     * 计算CRC16校验
+     *
+     * @param data   需要计算的数组
+     * @param offset 起始位置
+     * @param len    长度
+     * @param preval 之前的校验值 初始值
+     * @return CRC16校验值
+     */
+    public static byte[] calcCrc16(byte[] data, int offset, int len, int preval) {
+        int ucCRCHi = (preval & 0xff00) >> 8;
+        int ucCRCLo = preval & 0x00ff;
+        int iIndex;
+        for (int i = 0; i < len; ++i) {
+            iIndex = (ucCRCLo ^ data[offset + i]) & 0x00ff;
+            ucCRCLo = ucCRCHi ^ gaCrcHi[iIndex];
+            ucCRCHi = gaCrcLo[iIndex];
         }
-        byte[] crc = new byte[2];
-        crc[0] = byCrcHi;
-        crc[1] = byCrcLo;
-        return crc;
+        int value = ((ucCRCHi & 0x00ff) << 8) | (ucCRCLo & 0x00ff) & 0xffff;
+        byte[] rs = new byte[2];
+        rs[0] = (byte) ucCRCHi;
+        rs[1] = (byte) ucCRCLo;
+        System.out.println(StrUtil.format("数据为={},校验码={}", HexUtil.encodeHexStr(data), HexUtil.encodeHexStr(rs)));
+        return rs;
     }
 }
