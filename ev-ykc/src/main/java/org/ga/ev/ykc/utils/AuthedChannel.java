@@ -1,6 +1,7 @@
 package org.ga.ev.ykc.utils;
 
 import io.netty.channel.Channel;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author wanzhongsu
  * @date 2020/5/22 12:26
  */
+@Service
 public class AuthedChannel {
     private Map<String, Channel> map = new ConcurrentHashMap<>();
 

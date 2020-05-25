@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ga.ev.ykc.domain.YkcFrame;
 import org.ga.ev.ykc.domain.enums.YkcCmd;
 import org.ga.ev.ykc.service.ICmdService;
+import org.ga.ev.ykc.utils.AuthedChannel;
 import org.ga.ev.ykc.utils.ChannelThreadLocal;
 import org.ga.ev.ykc.utils.CmdFactory;
 import org.ga.ev.ykc.utils.YkcAttributeKey;
@@ -32,6 +33,8 @@ import javax.annotation.Resource;
 public class DispatchHandler extends SimpleChannelInboundHandler<YkcFrame> {
     @Resource
     private ChannelThreadLocal threadLocal;
+    @Resource
+    private AuthedChannel authedChannel;
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, YkcFrame o) throws Exception {
@@ -68,6 +71,7 @@ public class DispatchHandler extends SimpleChannelInboundHandler<YkcFrame> {
         Channel channel = ctx.channel();
         if (channel.hasAttr(YkcAttributeKey.CTRL_ADDRESS)) {
             log.info(StrUtil.format("已认证的连接关闭,集控器{}", channel.attr(YkcAttributeKey.CTRL_ADDRESS).get()));
+            authedChannel.removeChannel(channel.attr(YkcAttributeKey.CTRL_ADDRESS).get());
         } else {
             log.info("未认证的连接关闭");
         }
