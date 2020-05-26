@@ -14,6 +14,7 @@ import org.ga.ev.hhd.domain.HhdFrame;
 import org.ga.ev.hhd.domain.enums.HhdCmd;
 import org.ga.ev.hhd.service.ICmdService;
 import org.ga.ev.hhd.utils.AuthedChannel;
+import org.ga.ev.hhd.utils.ChannelThreadLocal;
 import org.ga.ev.hhd.utils.CmdFactory;
 import org.springframework.stereotype.Component;
 
@@ -32,8 +33,12 @@ public class DispatchHandler extends SimpleChannelInboundHandler<HhdFrame> {
     @Resource
     private AuthedChannel authedChannel;
 
+    @Resource
+    private ChannelThreadLocal threadLocal;
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HhdFrame msg) throws Exception {
+        threadLocal.set(ctx.channel());
         HhdCmd cmd = msg.getCmd();
         ICmdService service = CmdFactory.getService(cmd);
         if (!ObjectUtil.isEmpty(service)) {

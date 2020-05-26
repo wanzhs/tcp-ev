@@ -1,10 +1,6 @@
-package cdz.ga.ev.kl;
+package org.ga.ev.zw;
 
-import cdz.ga.ev.kl.domain.bean.KlEncoder;
-import cdz.ga.ev.kl.domain.bean.KlFrame;
-import cdz.ga.ev.kl.domain.enums.KlCmd;
-import cdz.ga.ev.kl.domain.enums.ExpType;
-import cdz.ga.ev.kl.domain.enums.FrameType;
+import cn.hutool.json.JSONUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -13,14 +9,18 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.ga.ev.zw.domain.ZwEncoder;
+import org.ga.ev.zw.domain.ZwFrame;
+import org.ga.ev.zw.domain.enums.ZwCmd;
+import org.ga.ev.zw.domain.enums.ZwRegister;
 
 /**
- * 模拟netty客户端
+ * 智网客户端帧数据模拟
  *
  * @author wanzhongsu
- * @date 2020/5/20 11:31
+ * @date 2020/5/26 11:09
  */
-public class NettyClient {
+public class ZwNettyClient {
     private String ip = "127.0.0.1";
     private int port = 9000;
 
@@ -33,24 +33,23 @@ public class NettyClient {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new KlEncoder());
+                pipeline.addLast(new ZwEncoder());
             }
         });
         try {
             Channel channel = bootstrap.connect(ip, port).sync().channel();
             int i = 0;
             while (++i < 2) {
-                KlFrame klFrame = new KlFrame();
-                klFrame.setCanIndex(300)
-                        .setCtrlId(263)
-                        .setSeq(KlEncoder.getSeq())
-                        .setFrameType(FrameType.REPLY_FRAME)
-                        .setExpType(ExpType.DENY_FRAME)
-                        .setKlCmd(KlCmd.X0A)
-                        .setMst(29)
-                        .setData("HelloWorld".getBytes());
-                channel.writeAndFlush(klFrame);
-                System.out.println("已发送" + i);
+                ZwFrame zwFrame = new ZwFrame();
+                zwFrame.setCmd(ZwCmd.X01)
+                        .setCtrlAddress("0731000100010001")
+                        .setData("hello world".getBytes())
+                        .setSeq(ZwEncoder.getSeq())
+                        .setOperator("0001")
+                        .setRegister(ZwRegister.REGISTERED)
+                        .setResponseCode("00FFFF");
+                channel.writeAndFlush(zwFrame);
+                System.out.println("已发送" + JSONUtil.toJsonStr(zwFrame));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -61,6 +60,6 @@ public class NettyClient {
     }
 
     public static void main(String[] args) {
-        new NettyClient().run();
+        new ZwNettyClient().run();
     }
 }
